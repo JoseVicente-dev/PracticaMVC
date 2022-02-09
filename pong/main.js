@@ -48,6 +48,9 @@
         },
         up: function () {
             this.y -= this.speed
+        },
+        toString: function(){//Metodo que se retorna cuando se castea el objeto a un string
+            return 'x: '+ this.x +" y: "+ this.y
         }
     }
 })();
@@ -105,7 +108,8 @@
 })()
 
 let board = new Board(800, 400)
-var bar = new Bar(20, 100, 40, 100, board) //No es necesario crear un objeto Bar, pues la funcion se auto adiciona al board al invocar el "constructor"
+//NOTA: let no permite declarar dos variables con el mismo nombre con el mismo scope, en tanto que var sí
+var bar = new Bar(20, 100, 40, 100, board)
 var bar = new Bar(740, 100, 40, 100, board)
 let canvas = document.getElementById("canvas")
 let board_view = new BoardView(canvas, board)
@@ -119,10 +123,13 @@ document.addEventListener('keydown', function (e) {
     console.log(e.keyCode);//keyCode identifica la tecla presionada mediante un numero
     if (e.code == 'ArrowUp') {
         bar.up()
+        
     }
     else if (e.code == 'ArrowDown') {
         bar.down()
+        
     }
+    console.log(bar.toString());
 })
 
 
