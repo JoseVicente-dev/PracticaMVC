@@ -36,19 +36,18 @@
         this.width = width
         this.height = height
         this.board = board
-
         this.board.bars.push(this)//adiciona un objeto Bar (this) al atributo bars[] del objeto board
-
         this.kind = "rectangle" //Le indica al canvas qué forma tiene el objeto
+        this.speed = 10
     }
 
     self.Bar.prototype = {
 
         down: function () {
-
+            this.y += this.speed
         },
         up: function () {
-
+            this.y -= this.speed
         }
     }
 })();
@@ -68,7 +67,7 @@
         draw: function () {
             for (let i = this.board.elements.length - 1; i >= 0; i--) {
                 let elemento = this.board.elements[i]
-                
+
                 draw(this.contexto, elemento)
             }
         }
@@ -86,12 +85,12 @@
      * @param {object} element elemento a dibujar
      */
     function draw(contexto, element) {
-        
+
         if (element !== null && element.hasOwnProperty("kind")) {
-            
+
             switch (element.kind) {
                 case "rectangle":
-                    
+
                     //funcion del contexto que dibuja un cuadrado
                     contexto.fillRect(element.x, element.y, element.width, element.height)
                     break;
@@ -105,6 +104,28 @@
 
 })()
 
+let board = new Board(800, 400)
+var bar = new Bar(20, 100, 40, 100, board) //No es necesario crear un objeto Bar, pues la funcion se auto adiciona al board al invocar el "constructor"
+var bar = new Bar(740, 100, 40, 100, board)
+let canvas = document.getElementById("canvas")
+let board_view = new BoardView(canvas, board)
+
+//El listener del evento de mover las barras se ubica en el document para que sea global y detectado desde cualquier parte de la pagina
+document.addEventListener('keydown', function (e) {
+
+    //NOTA: keyCode está deprecado. Es recomentable usar e.code o e.key
+    console.log('code', e.code, typeof e.code);
+    console.log('key', e.key, typeof e.key)
+    console.log(e.keyCode);//keyCode identifica la tecla presionada mediante un numero
+    if (e.code == 'ArrowUp') {
+        bar.up()
+    }
+    else if (e.code == 'ArrowDown') {
+        bar.down()
+    }
+})
+
+
 /*NOTA: el objeto window tiene scope global. 
 Cualquier elemento asignado a él puede accederse desde cualquier
 parte del script, siempre que se esté en la misma ventana
@@ -116,10 +137,12 @@ function main() {//CONTROLADOR
     /**
      * El controlador (funcion main()) le pasa a la vista (funcion BoardView()) el modelo (funcion Board()
      */
-    let board = new Board(800, 400)
+
+    //NOTA: Estas variables se ubican fuera de las funciones, para modificar su alcance a global
+    /* let board = new Board(800, 400)
     let bar = new Bar(20,100,40,100, board) //No es necesario crear un objeto Bar, pues la funcion se auto adiciona al board al invocar el "constructor"
-    Bar(740,100,40,100, board)
+    let bar = new Bar(740,100,40,100, board)
     let canvas = document.getElementById("canvas")
-    let board_view = new BoardView(canvas, board)
+    let board_view = new BoardView(canvas, board) */
     board_view.draw();
 }
