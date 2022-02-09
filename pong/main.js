@@ -14,7 +14,7 @@
 
     self.Board.protoype = {
         get elements(){ //Método que retorna las barras y la pelota
-            var elements = this.bars;
+            let elements = this.bars;
             elements.push(ball)
             return elements
         }
@@ -33,6 +33,10 @@
     }
 })()
 
+/*NOTA: el objeto window tiene scope global. 
+Cualquier elemento asignado a él puede accederse desde cualquier
+parte del script, siempre que se esté en la misma ventana
+*/
 window.addEventListener('load',main)//Evento que ejecuta la funcion main al cargar la pagina
 
 function main(){
