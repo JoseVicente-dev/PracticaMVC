@@ -118,6 +118,7 @@ function main() {//CONTROLADOR
      */
     let board = new Board(800, 400)
     let bar = new Bar(20,100,40,100, board) //No es necesario crear un objeto Bar, pues la funcion se auto adiciona al board al invocar el "constructor"
+    Bar(740,100,40,100, board)
     let canvas = document.getElementById("canvas")
     let board_view = new BoardView(canvas, board)
     board_view.draw();
