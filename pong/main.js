@@ -107,15 +107,16 @@
 
 })()
 
-let board = new Board(800, 400)
+var board = new Board(800, 400)
 //NOTA: let no permite declarar dos variables con el mismo nombre con el mismo scope, en tanto que var sí
 var bar_1 = new Bar(20, 100, 40, 100, board)
 var bar_2 = new Bar(740, 100, 40, 100, board)
-let canvas = document.getElementById("canvas")
-let board_view = new BoardView(canvas, board)
+var canvas = document.getElementById("canvas")
+var board_view = new BoardView(canvas, board)
 
 //El listener del evento de mover las barras se ubica en el document para que sea global y detectado desde cualquier parte de la pagina
 document.addEventListener('keydown', function (e) {
+    e.preventDefault()
 
     //NOTA: keyCode está deprecado. Es recomentable usar e.code o e.key
     console.log('code', e.code, typeof e.code);
@@ -157,7 +158,7 @@ function controler() {//CONTROLADOR
     let bar = new Bar(20,100,40,100, board) //No es necesario crear un objeto Bar, pues la funcion se auto adiciona al board al invocar el "constructor"
     let bar = new Bar(740,100,40,100, board)
     let canvas = document.getElementById("canvas")
-    let board_view = new BoardView(canvas, board) */
+    let board_view = new BoardView(canvas, board) 
     board_view.draw();
     windows.requestAnimationFrame(controler)
 }
