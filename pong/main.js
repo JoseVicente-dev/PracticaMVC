@@ -49,8 +49,8 @@
         up: function () {
             this.y -= this.speed
         },
-        toString: function(){//Metodo que se retorna cuando se castea el objeto a un string
-            return 'x: '+ this.x +" y: "+ this.y
+        toString: function () {//Metodo que se retorna cuando se castea el objeto a un string
+            return 'x: ' + this.x + " y: " + this.y
         }
     }
 })();
@@ -109,8 +109,8 @@
 
 let board = new Board(800, 400)
 //NOTA: let no permite declarar dos variables con el mismo nombre con el mismo scope, en tanto que var sí
-var bar = new Bar(20, 100, 40, 100, board)
-var bar = new Bar(740, 100, 40, 100, board)
+var bar_1 = new Bar(20, 100, 40, 100, board)
+var bar_2 = new Bar(740, 100, 40, 100, board)
 let canvas = document.getElementById("canvas")
 let board_view = new BoardView(canvas, board)
 
@@ -122,14 +122,17 @@ document.addEventListener('keydown', function (e) {
     console.log('key', e.key, typeof e.key)
     console.log(e.keyCode);//keyCode identifica la tecla presionada mediante un numero
     if (e.code == 'ArrowUp') {
-        bar.up()
-        
+        bar_1.up()
+    } else if (e.code == 'ArrowDown') {
+        bar_1.down()
+    } else if (e.code == 'KeyW') {
+        bar_2.up()
+    } else if (e.code == 'KeyS') {
+        bar_2.down()
     }
-    else if (e.code == 'ArrowDown') {
-        bar.down()
-        
-    }
-    console.log(bar.toString());
+
+    console.log(bar_1.toString());
+    console.log(bar_2.toString());
 })
 
 
@@ -137,12 +140,16 @@ document.addEventListener('keydown', function (e) {
 Cualquier elemento asignado a él puede accederse desde cualquier
 parte del script, siempre que se esté en la misma ventana
 */
-window.addEventListener("load", main)//Evento que ejecuta la funcion main al cargar la pagina
 
-function main() {//CONTROLADOR
+//La linea inferior ya no es necesaria, porque la funcion controlador (main) se va a ejecutar en cada moviento de la barra
+//window.addEventListener("load", main)//Evento que ejecuta la funcion main al cargar la pagina.
+windows.requestAnimationFrame(controler)
+
+
+function controler() {//CONTROLADOR
     //Funcion que ejecuta todos los elementos
     /**
-     * El controlador (funcion main()) le pasa a la vista (funcion BoardView()) el modelo (funcion Board()
+     * El controlador (funcion controler()) le pasa a la vista (funcion BoardView()) el modelo (funcion Board()
      */
 
     //NOTA: Estas variables se ubican fuera de las funciones, para modificar su alcance a global
@@ -152,4 +159,5 @@ function main() {//CONTROLADOR
     let canvas = document.getElementById("canvas")
     let board_view = new BoardView(canvas, board) */
     board_view.draw();
+    windows.requestAnimationFrame(controler)
 }
