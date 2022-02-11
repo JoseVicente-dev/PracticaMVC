@@ -10,11 +10,12 @@
         this.game_over = false;
         this.bars = [];
         this.ball = null;
+        this.playing = false;
     }
 
     self.Board.prototype = {
         get elements() { //Método que retorna las barras y la pelota
-            let elements = this.bars.map(function(bar){ return bar});
+            let elements = this.bars.map(function (bar) { return bar });
             elements.push(this.ball)
             return elements
         }
@@ -28,9 +29,18 @@
         this.radius = radius
         this.speed_y = 0
         this.speed_x = 3
+        this.board = board
+        this.direction = 1
 
         board.ball = this
         this.kind = "circle"
+
+    }
+    self.Ball.prototype = {
+        move: function () {
+            this.x += (this.speed_x * this.direction)
+            this.y += (this.speed_y * this.direction)
+        }
     }
 
 })();
@@ -92,8 +102,11 @@
             }
         },
         play: function () {
-            this.clean()
-            this.draw()
+            if (this.board.playing) {
+                this.clean()
+                this.draw()
+                this.board.ball.move()
+            }
         }
     }
 
@@ -142,23 +155,32 @@ var ball = new Ball(350, 100, 10, board)
 
 //El listener del evento de mover las barras se ubica en el document para que sea global y detectado desde cualquier parte de la pagina
 document.addEventListener('keydown', function (e) {
-    e.preventDefault()
+
 
     //NOTA: keyCode está deprecado. Es recomentable usar e.code o e.key
-    // console.log('code', e.code, typeof e.code);
+    console.log('code', e.code, typeof e.code);
     // console.log('key', e.key, typeof e.key)
     //console.log(e.keyCode);//keyCode identifica la tecla presionada mediante un numero
     if (e.code == 'ArrowUp') {
-        bar_1.up()
-    } else if (e.code == 'ArrowDown') {
-        bar_1.down()
-    } else if (e.code == 'KeyW') {
+        e.preventDefault()
         bar_2.up()
-    } else if (e.code == 'KeyS') {
+    } else if (e.code == 'ArrowDown') {
+        e.preventDefault()
         bar_2.down()
+    } else if (e.code == 'KeyW') {
+        e.preventDefault()
+        bar_1.up()
+    } else if (e.code == 'KeyS') {
+        e.preventDefault()
+        bar_1.down()
+    } else if (e.code == 'Space') {
+        e.preventDefault()
+        board.playing = !board.playing
     }
 })
 
+
+board_view.draw()
 
 /*NOTA: el objeto window tiene scope global. 
 Cualquier elemento asignado a él puede accederse desde cualquier
@@ -168,6 +190,7 @@ parte del script, siempre que se esté en la misma ventana
 //La linea inferior ya no es necesaria, porque la funcion controlador (main) se va a ejecutar en cada moviento de la barra
 //window.addEventListener("load", main)//Evento que ejecuta la funcion main al cargar la pagina.
 window.requestAnimationFrame(controller)
+
 
 
 function controller() {//CONTROLADOR
@@ -187,7 +210,7 @@ function controller() {//CONTROLADOR
     //Los metodos clean() y draw() se dejan en el metodo play()
     // board_view.clean();
     // board_view.draw();
-    board_view.play();    
+    board_view.play();
     window.requestAnimationFrame(controller)
 
 }
