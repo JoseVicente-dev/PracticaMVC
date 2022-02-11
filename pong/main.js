@@ -22,6 +22,20 @@
 })();
 
 (function () {
+    self.Ball = function (x, y, radius, board) {
+        this.x = x
+        this.y = y
+        this.radius = radius
+        this.speed_y = 0
+        this.speed_x = 3
+
+        board.ball = this
+        this.kind = "circle"
+    }
+
+})();
+
+(function () {
     /**
      * Define el objeto Bar
      * @param {number} x La posicion en x de la barra
@@ -38,7 +52,7 @@
         this.board = board
         this.board.bars.push(this)//adiciona un objeto Bar (this) al atributo bars[] del objeto board
         this.kind = "rectangle" //Le indica al canvas qué forma tiene el objeto
-        this.speed = 10
+        this.speed = 20
     }
 
     self.Bar.prototype = {
@@ -67,12 +81,19 @@
     }
 
     self.BoardView.prototype = {
+        clean: function () {
+            this.contexto.clearRect(0, 0, this.board.width, this.board.height)
+        },
         draw: function () {
             for (let i = this.board.elements.length - 1; i >= 0; i--) {
                 let elemento = this.board.elements[i]
 
                 draw(this.contexto, elemento)
             }
+        },
+        play: function () {
+            this.clean()
+            this.draw()
         }
     }
 
@@ -97,14 +118,18 @@
                     //funcion del contexto que dibuja un cuadrado
                     contexto.fillRect(element.x, element.y, element.width, element.height)
                     break;
+                case "circle":
+                    contexto.beginPath()
+                    contexto.arc(element.x, element.y, element.radius, 0, 7)
+                    contexto.fill()
+                    contexto.closePath()
+                    break;
 
                 // default:
                 //     break;
             }
         }
-
     }
-
 })()
 
 var board = new Board(800, 400)
@@ -113,15 +138,16 @@ var bar_1 = new Bar(20, 100, 40, 100, board)
 var bar_2 = new Bar(740, 100, 40, 100, board)
 var canvas = document.getElementById("canvas")
 var board_view = new BoardView(canvas, board)
+var ball = new Ball(350, 100, 10, board)
 
 //El listener del evento de mover las barras se ubica en el document para que sea global y detectado desde cualquier parte de la pagina
 document.addEventListener('keydown', function (e) {
     e.preventDefault()
 
     //NOTA: keyCode está deprecado. Es recomentable usar e.code o e.key
-    console.log('code', e.code, typeof e.code);
-    console.log('key', e.key, typeof e.key)
-    console.log(e.keyCode);//keyCode identifica la tecla presionada mediante un numero
+    // console.log('code', e.code, typeof e.code);
+    // console.log('key', e.key, typeof e.key)
+    //console.log(e.keyCode);//keyCode identifica la tecla presionada mediante un numero
     if (e.code == 'ArrowUp') {
         bar_1.up()
     } else if (e.code == 'ArrowDown') {
@@ -131,9 +157,6 @@ document.addEventListener('keydown', function (e) {
     } else if (e.code == 'KeyS') {
         bar_2.down()
     }
-
-    console.log(bar_1.toString());
-    console.log(bar_2.toString());
 })
 
 
@@ -144,10 +167,10 @@ parte del script, siempre que se esté en la misma ventana
 
 //La linea inferior ya no es necesaria, porque la funcion controlador (main) se va a ejecutar en cada moviento de la barra
 //window.addEventListener("load", main)//Evento que ejecuta la funcion main al cargar la pagina.
-windows.requestAnimationFrame(controler)
+window.requestAnimationFrame(controller)
 
 
-function controler() {//CONTROLADOR
+function controller() {//CONTROLADOR
     //Funcion que ejecuta todos los elementos
     /**
      * El controlador (funcion controler()) le pasa a la vista (funcion BoardView()) el modelo (funcion Board()
@@ -158,7 +181,13 @@ function controler() {//CONTROLADOR
     let bar = new Bar(20,100,40,100, board) //No es necesario crear un objeto Bar, pues la funcion se auto adiciona al board al invocar el "constructor"
     let bar = new Bar(740,100,40,100, board)
     let canvas = document.getElementById("canvas")
-    let board_view = new BoardView(canvas, board) 
-    board_view.draw();
-    windows.requestAnimationFrame(controler)
+    let board_view = new BoardView(canvas, board) */
+
+
+    //Los metodos clean() y draw() se dejan en el metodo play()
+    // board_view.clean();
+    // board_view.draw();
+    board_view.play();    
+    window.requestAnimationFrame(controller)
+
 }
