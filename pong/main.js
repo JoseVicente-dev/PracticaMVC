@@ -31,6 +31,8 @@
         this.speed_x = 3
         this.board = board
         this.direction = 1
+        this.bounce_angle=0
+        this.max_bounce_angle= Math.PI/12
 
         board.ball = this
         this.kind = "circle"
@@ -40,9 +42,23 @@
         move: function () {
             this.x += (this.speed_x * this.direction)
             this.y += (this.speed_y * this.direction)
+        },
+        collision: function (bar) {
+            //Reacciona a la colisión con una barra pasada por parametro
+            var relative_intersect_y = (bar.y+(bar.height / 2)) - this.y
+            var normalize_intersect_y = relative_intersect_y / (bar.height / 2)
+
+            this.bounce_angle = normalize_intersect_y * this.max_bounce_angle
+            this.speed_y = this.speed * -Math.sin(this.bounce_angle)
+            this.speed_x = this.speed * Math.cos(this.bounce_angle)
+
+            if (this.x > (this.board.width / 2)) {
+                this.direction = -1;
+            } else {
+                this.direction = 1
+            }
         }
     }
-
 })();
 
 (function () {
@@ -101,6 +117,14 @@
                 draw(this.contexto, elemento)
             }
         },
+        check_collisions: function () {
+            for (let i = this.board.bars.length - 1; i >= 0; i--) {
+                let bar = this.board.bars[i]
+                if (hit(bar, this.board.ball)) {
+                    this.board.ball.collision(bar)
+                }
+            }
+        },
         play: function () {
             if (this.board.playing) {
                 this.clean()
@@ -115,6 +139,31 @@
      * Son una de las ventajas de lenguajes con paradigmas hibridos funcional y OO.
      * Son funciones que pueden estar fuera de una clase
      */
+
+    function hit(a, b) {
+        //Revisa si a coliciona con b
+        var hit = false
+        //Colision horizontal
+        if (b.x + b.width >= a.x && b.x < a.x + a.width) {
+            //colision vertical
+            if (b.y + b.height >= a.y && b.y < a.y + a.height) {
+                hit = true;
+            }
+        }
+        //colision a con b
+        if (b.x <= a.x && b.x + b.width >= a.x + a.width) {
+            if (b.y <= a.y && b.y + b.height >= a.y + a.height) {
+                hit = true
+            }
+        }
+        //colision b con a
+        if (a.x <= b.x && a.x + a.width >= b.x + b.width) {
+            if (a.y <= b.y && a.y + a.height >= b.y + b.height) {
+                hit = true
+            }
+        }
+        return hit
+    }
 
     /**
      * Dibuja los elementos
@@ -190,8 +239,6 @@ parte del script, siempre que se esté en la misma ventana
 //La linea inferior ya no es necesaria, porque la funcion controlador (main) se va a ejecutar en cada moviento de la barra
 //window.addEventListener("load", main)//Evento que ejecuta la funcion main al cargar la pagina.
 window.requestAnimationFrame(controller)
-
-
 
 function controller() {//CONTROLADOR
     //Funcion que ejecuta todos los elementos
