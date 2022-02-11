@@ -27,28 +27,35 @@
         this.x = x
         this.y = y
         this.radius = radius
+        this.speed = 3
         this.speed_y = 0
         this.speed_x = 3
         this.board = board
-        this.direction = 1
+        this.direction = -1
         this.bounce_angle=0
         this.max_bounce_angle= Math.PI/12
 
         board.ball = this
         this.kind = "circle"
-
     }
     self.Ball.prototype = {
         move: function () {
             this.x += (this.speed_x * this.direction)
             this.y += (this.speed_y * this.direction)
         },
+        get width(){
+            return this.radius*2
+        },
+        get height() {
+            return this.radius*2
+        },
         collision: function (bar) {
+            console.log("colision");
             //Reacciona a la colisión con una barra pasada por parametro
             var relative_intersect_y = (bar.y+(bar.height / 2)) - this.y
-            var normalize_intersect_y = relative_intersect_y / (bar.height / 2)
+            var normalized_intersect_y = relative_intersect_y / (bar.height / 2)
 
-            this.bounce_angle = normalize_intersect_y * this.max_bounce_angle
+            this.bounce_angle = normalized_intersect_y * this.max_bounce_angle;
             this.speed_y = this.speed * -Math.sin(this.bounce_angle)
             this.speed_x = this.speed * Math.cos(this.bounce_angle)
 
@@ -57,6 +64,7 @@
             } else {
                 this.direction = 1
             }
+        
         }
     }
 })();
@@ -113,14 +121,15 @@
         draw: function () {
             for (let i = this.board.elements.length - 1; i >= 0; i--) {
                 let elemento = this.board.elements[i]
-
                 draw(this.contexto, elemento)
             }
         },
         check_collisions: function () {
+            console.log("check_collisions");
             for (let i = this.board.bars.length - 1; i >= 0; i--) {
                 let bar = this.board.bars[i]
                 if (hit(bar, this.board.ball)) {
+                    console.log('hit');
                     this.board.ball.collision(bar)
                 }
             }
@@ -129,6 +138,7 @@
             if (this.board.playing) {
                 this.clean()
                 this.draw()
+                this.check_collisions()
                 this.board.ball.move()
             }
         }
@@ -141,6 +151,7 @@
      */
 
     function hit(a, b) {
+        console.log('hit interno');
         //Revisa si a coliciona con b
         var hit = false
         //Colision horizontal
